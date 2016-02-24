@@ -1,0 +1,20 @@
+{
+  "name": "react-gulp-node-template",
+  "description": "Template for react-gulp-node-app",
+  "main": "index.js",
+  "authors": [
+    "Marek Błaszczk"
+  ],
+  "license": "BSD-2-Clause",
+  "moduleType": [],
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "src/components",
+    "test",
+    "tests"
+  ]
+}
