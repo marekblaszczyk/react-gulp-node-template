@@ -1,11 +1,15 @@
 "use strict";
 
 var gulp = require('gulp');
-var connect = require('gulp-connect'); // Runs a local dev server
-var open = require('gulp-open'); // Open a URL in a web browser
+var plugins = require('gulp-load-plugins')({
+  pattern: ['gulp-*', 'gulp.*', 'main-bower-files'],
+  replaceString: /\bgulp[\-.]/
+  // gulp-open, gulp-connect ....
+});
 var browserify = require('browserify'); // Bundles JS
 var reactify = require('reactify'); // Transforms React JSX to JS
 var source = require('vinyl-source-stream'); // Use conventional text streams with Gulp
+var transform = require('vinyl-transform');
 
 
 // Config dev server
@@ -25,7 +29,22 @@ var config = {
 gulp.task('html', function() {
     gulp.src(config.paths.html)
         .pipe(gulp.dest(config.paths.dist))
-        .pipe(connect.reload());
+        .pipe(plugins.connect.reload());
+});
+
+
+gulp.task('vendors', function() {
+    var browserified = transform(function(filename) {
+        var b = browserify(filename);
+        return b.bundle();
+    });
+
+    gulp.src(plugins.mainBowerFiles())
+        .pipe(plugins.filter('*.js'))
+        .pipe(browserified)
+        .pipe(source('vendors.js'))
+        .pipe(gulp.dest(config.paths.dist + '/vendors'))
+        .pipe(plugins.connect.reload());
 });
 
 
@@ -36,7 +55,7 @@ gulp.task('js', function() {
         .on('error', console.error.bind(console))
         .pipe(source('bundle.js'))
         .pipe(gulp.dest(config.paths.dist + '/scripts'))
-        .pipe(connect.reload());
+        .pipe(plugins.connect.reload());
 });
 
 
@@ -49,7 +68,7 @@ gulp.task('watch', function() {
 
 // Start local dev server
 gulp.task('connect', function() {
-    connect.server({
+    plugins.connect.server({
         root: ['dist'],
         port: config.port,
         base: config.devBaseUrl,
@@ -61,8 +80,8 @@ gulp.task('connect', function() {
 // Open uri in browser
 gulp.task('open', ['connect'], function() {
     gulp.src('./dist/index.html')
-        .pipe(open({ uri: config.devBaseUrl + ':' + config.port + '/'}));
+        .pipe(plugins.open({ uri: config.devBaseUrl + ':' + config.port + '/'}));
 });
 
 // Default task - gulp command in project dir
-gulp.task('default', ['html', 'js', 'components', 'open', 'watch']);
+gulp.task('default', ['html', 'js', 'vendors', 'open', 'watch']);
