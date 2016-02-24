@@ -25,7 +25,7 @@ gulp.task('html', function() {
 
 // Watch changes
 gulp.task('watch', function() {
-
+    gulp.watch(config.paths.html, ['html']);
 });
 
 
@@ -47,4 +47,4 @@ gulp.task('open', ['connect'], function() {
 });
 
 // Default task - gulp command in project dir
-gulp.task('default', ['html', 'open']);
+gulp.task('default', ['html', 'open', 'watch']);

@@ -16,5 +16,8 @@
     "src/components",
     "test",
     "tests"
-  ]
+  ],
+  "dependencies": {
+    "jquery": "^2.2.1"
+  }
 }
