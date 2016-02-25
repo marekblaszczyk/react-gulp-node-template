@@ -5,6 +5,7 @@ var plugins = require('gulp-load-plugins')({
   pattern: ['gulp-*', 'gulp.*', 'main-bower-files', 'gulp-minify-css'],
   replaceString: /\bgulp[\-.]/
   // gulp-open, gulp-connect ....
+  // lint Js files, including JSX
 });
 
 var browserify = require('browserify'); // Bundles JS
@@ -34,7 +35,7 @@ gulp.task('html', function() {
         .pipe(plugins.connect.reload());
 });
 
-// vendors
+// vendors components
 gulp.task('vendors', function() {
 //    plugins.util.log(mainBowerFiles('**/*'));
 
@@ -57,6 +58,7 @@ gulp.task('vendors', function() {
 });
 
 
+// Js task
 gulp.task('js', function() {
     browserify(config.paths.mainJs)
         .transform(reactify)
@@ -68,6 +70,7 @@ gulp.task('js', function() {
 });
 
 
+// Css task
 gulp.task('css', function() {
     gulp.src(config.paths.css)
         .pipe(plugins.concat('bundle.css'))
@@ -76,10 +79,19 @@ gulp.task('css', function() {
 });
 
 
+// ESlint task
+gulp.task('lint', function() {
+    gulp.src([config.paths.js, '!*src/components/**/*.js'])
+        .pipe(plugins.debug())
+        .pipe(plugins.eslint({ config: 'eslint.config.json' }))
+        .pipe(plugins.eslint.format());
+});
+
+
 // Watch changes
 gulp.task('watch', function() {
     gulp.watch(config.paths.html, ['html']);
-    gulp.watch(config.paths.js, ['js']);
+    gulp.watch(config.paths.js, ['js', 'lint']);
 });
 
 
@@ -101,4 +113,4 @@ gulp.task('open', ['connect'], function() {
 });
 
 // Default task - gulp command in project dir
-gulp.task('default', ['html', 'css', 'js', 'vendors', 'open', 'watch']);
+gulp.task('default', ['html', 'css', 'js', 'lint', 'vendors', 'open', 'watch']);
