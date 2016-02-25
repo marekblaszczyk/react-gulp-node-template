@@ -2,31 +2,21 @@
 
 var React = require('react');
 var ReactDOM = require('react-dom');
-var HomePage = require('./react_components/homePage');
-var AboutPage = require('./react_components/aboutPage');
+var routes = require('./routes');
 
-var App = React.createClass({
-    render: function() {
-        var Child;
+var ReactRouter = require('react-router');
 
-        switch(this.props.route) {
-            case 'about': Child = AboutPage; break;
-            default: Child = HomePage;
-        }
+var Router = ReactRouter.Router;
+var hashHistory = ReactRouter.hashHistory;
 
-        return (
-            <div>
-                <Child />
-            </div>
-        );
-    }
-});
 
-function render() {
-    var route = window.location.hash.substr(1);
-    console.log(route);
-    ReactDOM.render(<App route={route} />, document.getElementById('app'));
-}
+// https://github.com/reactjs/react-router-tutorial/blob/start/lessons/02-rendering-a-router.md
+// https://github.com/reactjs/react-router/tree/master/examples
 
-window.addEventListener('hashchange', render);
-render();
+ReactDOM.render(
+    <Router history={hashHistory}>
+        {routes}
+    </Router>,
+     document.getElementById('app'));
+
+
