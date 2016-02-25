@@ -18,6 +18,8 @@
     "tests"
   ],
   "dependencies": {
+    "impress.js": "^0.5.3",
+    "reveal.js": "^3.2.0",
     "jquery": "^2.2.1"
   }
 }

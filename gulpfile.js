@@ -1,6 +1,7 @@
 "use strict";
 
 var gulp = require('gulp');
+var mainBowerFiles = require('main-bower-files');
 var plugins = require('gulp-load-plugins')({
   pattern: ['gulp-*', 'gulp.*', 'main-bower-files'],
   replaceString: /\bgulp[\-.]/
@@ -32,19 +33,35 @@ gulp.task('html', function() {
         .pipe(plugins.connect.reload());
 });
 
-
+// vendors
 gulp.task('vendors', function() {
-    var browserified = transform(function(filename) {
-        var b = browserify(filename);
-        return b.bundle();
-    });
+//    plugins.util.log(mainBowerFiles('**/*.js'));
+
+    var jsFilter = plugins.filter('**/*.js', { restore: true });
+    var cssFilter = plugins.filter('*.css', { restore: true });
 
     gulp.src(plugins.mainBowerFiles())
-        .pipe(plugins.filter('*.js'))
-        .pipe(browserified)
-        .pipe(source('vendors.js'))
-        .pipe(gulp.dest(config.paths.dist + '/vendors'))
-        .pipe(plugins.connect.reload());
+        .pipe(jsFilter)
+        .pipe(plugins.uglify())
+        .pipe(plugins.rename({ suffix: ".min"}))
+        .pipe(gulp.dest(config.paths.dist + '/vendors/js'))
+        .pipe(jsFilter.restore)
+        .pipe(cssFilter)
+        .pipe(plugins.minifycss())
+        .pipe(gulp.dest(config.paths.dist + '/vendors/css'))
+
+
+//    browserify(plugins.mainBowerFiles('**/*.js'))
+//        .bundle()
+//        .pipe(source('vendors.js'))
+//        .pipe(gulp.dest(config.paths.dist + '/vendors/js'))
+//        .pipe(plugins.connect.reload());
+
+//    browserify(plugins.mainBowerFiles('**/*.css'))
+//        .bundle()
+//        .pipe(source('vendors.css'))
+//        .pipe(gulp.dest(config.paths.dist + '/vendors/css'))
+//        .pipe(plugins.connect.reload());
 });
 
 
