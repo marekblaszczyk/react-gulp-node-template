@@ -43,6 +43,7 @@ gulp.task('vendors', function() {
     var cssFilter = plugins.filter('**/**/*.css', { restore: true });
 
     gulp.src(plugins.mainBowerFiles())
+        .pipe(plugins.debug())
         .pipe(jsFilter)
         .pipe(plugins.if('!*.min.js', plugins.uglify()))
         .pipe(plugins.if('!*.min.js', plugins.rename({ suffix: ".min"})))
