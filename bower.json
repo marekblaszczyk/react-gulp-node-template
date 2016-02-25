@@ -19,7 +19,15 @@
   ],
   "dependencies": {
     "impress.js": "^0.5.3",
-    "reveal.js": "^3.2.0",
-    "jquery": "^2.2.1"
+    "jquery": "^2.2.1",
+    "bootstrap": "^3.3.6"
+  },
+  "overrides": {
+    "bootstrap": {
+      "main": [
+        "dist/css/bootstrap.css",
+        "dist/js/bootstrap.js"
+      ]
+    }
   }
 }
