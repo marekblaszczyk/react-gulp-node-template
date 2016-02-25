@@ -1,18 +1,16 @@
 "use strict";
 
 var gulp = require('gulp');
-var mainBowerFiles = require('main-bower-files');
-var minifycss = require('gulp-minify-css');
 var plugins = require('gulp-load-plugins')({
   pattern: ['gulp-*', 'gulp.*', 'main-bower-files', 'gulp-minify-css'],
   replaceString: /\bgulp[\-.]/
   // gulp-open, gulp-connect ....
 });
+
 var browserify = require('browserify'); // Bundles JS
 var reactify = require('reactify'); // Transforms React JSX to JS
 var source = require('vinyl-source-stream'); // Use conventional text streams with Gulp
 var transform = require('vinyl-transform');
-
 
 
 // Config dev server
@@ -22,6 +20,7 @@ var config = {
     paths: {
         html: './src/*.html',
         js: './src/**/*.js',
+        css: './src/css/*.css',
         components: './src/components/**',
         dist: './dist',
         mainJs: './src/main.js'
@@ -50,7 +49,7 @@ gulp.task('vendors', function() {
         .pipe(gulp.dest(config.paths.dist + '/vendors/js'))
         .pipe(jsFilter.restore)
         .pipe(cssFilter)
-        .pipe(plugins.if('!*.min.css', minifycss()))
+        .pipe(plugins.if('!*.min.css', plugins.minifyCss()))
         .pipe(plugins.if('!*.min.css', plugins.rename({ suffix: ".min"})))
         .pipe(plugins.concat('combined.min.css'))
         .pipe(gulp.dest(config.paths.dist + '/vendors/css'))
@@ -65,6 +64,14 @@ gulp.task('js', function() {
         .on('error', console.error.bind(console))
         .pipe(source('bundle.js'))
         .pipe(gulp.dest(config.paths.dist + '/scripts'))
+        .pipe(plugins.connect.reload());
+});
+
+
+gulp.task('css', function() {
+    gulp.src(config.paths.css)
+        .pipe(plugins.concat('bundle.css'))
+        .pipe(gulp.dest(config.paths.dist + '/css'))
         .pipe(plugins.connect.reload());
 });
 
@@ -94,4 +101,4 @@ gulp.task('open', ['connect'], function() {
 });
 
 // Default task - gulp command in project dir
-gulp.task('default', ['html', 'js', 'vendors', 'open', 'watch']);
+gulp.task('default', ['html', 'css', 'js', 'vendors', 'open', 'watch']);
